@@ -1,0 +1,18 @@
+machine:
+  services:
+    - docker
+  environment:
+    GOBIN: /home/ubuntu/.go_workspace/bin
+
+dependencies:
+  pre:
+    - docker run -d -p 4222:4222 nats
+  override:
+    - make deps
+    - make dev-deps
+    - make install
+
+test:
+  override:
+    - make test
+    - make lint
