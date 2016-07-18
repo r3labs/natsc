@@ -18,7 +18,7 @@ func subscribe(subj string) error {
 	}
 
 	_, err := n.Subscribe(subj, func(msg *nats.Msg) {
-		fmt.Println(string(msg.Data))
+		fmt.Println(string(msg.Subject) + " " + string(msg.Data))
 		if maxreplies == 1 {
 			done <- true
 		}
