@@ -18,6 +18,7 @@ var debug bool
 var retries int
 var timeout uint
 var maxreplies int
+var withreplies bool
 
 func exit(err error) {
 	if err != nil {
@@ -39,6 +40,7 @@ func options() (string, string, string) {
 	flag.IntVar(&retries, "r", 1, "retries")
 	flag.UintVar(&timeout, "t", 1, "timeout")
 	flag.IntVar(&maxreplies, "n", 0, "maximum replies")
+	flag.BoolVar(&withreplies, "replies", false, "show replies to requests")
 
 	flag.Parse()
 
@@ -66,8 +68,6 @@ func main() {
 		err = subscribe(subject)
 	case "req", "request":
 		err = request(subject, data)
-	case "rep", "reply":
-		//err = reply(subject, data)
 	case "pubsub":
 		err = pubsub(subject, data)
 	default:

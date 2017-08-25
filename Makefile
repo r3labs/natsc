@@ -3,6 +3,7 @@ install:
 
 deps:
 	go get github.com/nats-io/nats
+	go get github.com/fatih/color
 
 dev-deps:
 	go get -u github.com/golang/lint/golint
@@ -14,4 +15,3 @@ test:
 lint:
 	golint ./...
 	go vet ./...
-
