@@ -35,13 +35,14 @@ func subscribe(subj string) error {
 			return
 		}
 
+		if withreplies && isResponse(msg.Subject) {
+			fmt.Println(color.MagentaString("reply: "+msg.Subject) + "\n " + string(msg.Data) + "\n")
+			return
+		}
+
 		fmt.Println(color.CyanString(msg.Subject) + ": " + msg.Reply + "\n " + string(msg.Data) + "\n")
 		if msg.Reply != "" {
 			responses = append(responses, msg.Reply)
-		}
-
-		if withreplies && isResponse(msg.Subject) {
-			fmt.Println(color.MagentaString("reply: "+msg.Subject) + "\n " + string(msg.Data) + "\n")
 		}
 
 		if maxreplies == 1 {
