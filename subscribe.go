@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/nats-io/nats"
+	"github.com/r3labs/pattern"
 )
 
 var responses []string
@@ -29,10 +30,18 @@ func subscribe(subj string) error {
 		fmt.Printf("Subscribing to: %s\n", subj)
 	}
 
-	_, err := n.Subscribe(subj, func(msg *nats.Msg) {
+	_, err := n.Subscribe(">", func(msg *nats.Msg) {
+		if !pattern.Match(msg.Subject, subj) {
+			return
+		}
+
 		fmt.Println(color.CyanString(msg.Subject) + ": " + msg.Reply + "\n " + string(msg.Data) + "\n")
 		if msg.Reply != "" {
 			responses = append(responses, msg.Reply)
+		}
+
+		if withreplies && isResponse(msg.Subject) {
+			fmt.Println(color.MagentaString("reply: "+msg.Subject) + "\n " + string(msg.Data) + "\n")
 		}
 
 		if maxreplies == 1 {
@@ -40,18 +49,6 @@ func subscribe(subj string) error {
 		}
 		maxreplies--
 	})
-
-	if err != nil {
-		return err
-	}
-
-	if withreplies {
-		_, err = n.Subscribe(">", func(msg *nats.Msg) {
-			if isResponse(msg.Subject) {
-				fmt.Println(color.MagentaString("reply: "+msg.Subject) + "\n " + string(msg.Data) + "\n")
-			}
-		})
-	}
 
 	// Wait for all to be done
 	<-done
