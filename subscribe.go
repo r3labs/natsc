@@ -31,10 +31,12 @@ func subscribe(subj string) error {
 	}
 
 	_, err := n.Subscribe(">", func(msg *nats.Msg) {
+		if withreplies && isResponse(msg.Subject) {
+			fmt.Println(color.MagentaString("reply: "+msg.Subject) + "\n " + string(msg.Data) + "\n")
+			return
+		}
+
 		if !pattern.Match(msg.Subject, subj) {
-			if withreplies && isResponse(msg.Subject) {
-				fmt.Println(color.MagentaString("reply: "+msg.Subject) + "\n " + string(msg.Data) + "\n")
-			}
 			return
 		}
 
