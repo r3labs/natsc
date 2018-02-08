@@ -11,7 +11,7 @@ import (
 	"github.com/nats-io/nats"
 )
 
-func request(subj, data string) error {
+func request(subj string, data []byte) error {
 	var err error
 	var msg *nats.Msg
 	t := time.Second * time.Duration(timeout)
@@ -21,7 +21,7 @@ func request(subj, data string) error {
 	}
 
 	for i := 0; i < retries; i++ {
-		msg, err = n.Request(subj, []byte(data), t)
+		msg, err = n.Request(subj, data, t)
 		if err == nil {
 			fmt.Println(string(msg.Data))
 			break

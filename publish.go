@@ -6,11 +6,11 @@ package main
 
 import "fmt"
 
-func publish(subj, data string) error {
+func publish(subj string, data []byte) error {
 	if debug {
 		fmt.Printf("Publishing to: %s\n", subj)
 	}
-	err := n.Publish(subj, []byte(data))
+	err := n.Publish(subj, data)
 	if err != nil {
 		return err
 	}

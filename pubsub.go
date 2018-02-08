@@ -6,15 +6,15 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"os"
-	"strings"
 )
 
-func pubsub(subj, data string) error {
+func pubsub(subj string, data []byte) error {
 	go subscribe(subj)
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		data, _ := reader.ReadString('\n')
-		publish(subj, strings.Trim(data, "\n"))
+		data, _ := reader.ReadBytes('\n')
+		publish(subj, bytes.Trim(data, "\n"))
 	}
 }

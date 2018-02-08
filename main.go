@@ -9,11 +9,14 @@ import (
 	"fmt"
 	"os"
 
+	"io/ioutil"
+
 	"github.com/nats-io/nats"
 )
 
 var n *nats.Conn
 var url string
+var file string
 var debug bool
 var retries int
 var timeout uint
@@ -28,7 +31,10 @@ func exit(err error) {
 	os.Exit(0)
 }
 
-func options() (string, string, string) {
+func options() (string, string, []byte) {
+	var err error
+	var data []byte
+
 	mode := os.Args[1]
 
 	if len(os.Args) > 2 && mode != "--help" {
@@ -36,6 +42,7 @@ func options() (string, string, string) {
 	}
 
 	flag.StringVar(&url, "s", nats.DefaultURL, "nats url")
+	flag.StringVar(&file, "f", "", "request payload path")
 	flag.BoolVar(&debug, "v", false, "verbose")
 	flag.IntVar(&retries, "r", 1, "retries")
 	flag.UintVar(&timeout, "t", 1, "timeout")
@@ -44,7 +51,16 @@ func options() (string, string, string) {
 
 	flag.Parse()
 
-	return mode, flag.Arg(0), flag.Arg(1)
+	if file == "" {
+		data = []byte(flag.Arg(1))
+	} else {
+		data, err = ioutil.ReadFile(file)
+		if err != nil {
+			panic("could not read from payload file!")
+		}
+	}
+
+	return mode, flag.Arg(0), data
 }
 
 func connect() {
